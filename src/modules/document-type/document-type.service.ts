@@ -1,5 +1,3 @@
-// src/modules/document-types/document-types.service.ts
-
 import { Inject, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { DocumentType } from '@prisma/client';
 import { CreateDocumentTypeDto } from './dtos/create-document-type.dto';
@@ -7,7 +5,7 @@ import { UpdateDocumentTypeDto } from './dtos/update-document-type.dto';
 import { IDocumentTypeRepository, DOCUMENT_TYPE_REPOSITORY } from './interfaces/document-type.repository.interface';
 
 @Injectable()
-export class DocumentTypesService {
+export class DocumentTypeService {
   constructor(
     @Inject(DOCUMENT_TYPE_REPOSITORY)
     private readonly documentTypeRepository: IDocumentTypeRepository,

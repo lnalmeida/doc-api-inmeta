@@ -4,30 +4,28 @@ import { AppService } from './app.service';
 import { PrismaService } from './database/prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { appConfig } from './config/app.config';
-import { DocumentTypesModule } from './modules/document-types/document-types.module';
-import { DocumentTypesController } from './modules/document-types/document-types.controller';
-import { DocumentTypesService } from './modules/document-types/document-types.service';
-import { DocumentTypeRepository } from './modules/document-types/document-types.repository';
-import { DOCUMENT_TYPE_REPOSITORY } from './modules/document-types/interfaces/document-type.repository.interface';
+import { DocumentTypeService } from './modules/document-type/document-type.service';
+import { EmployeeService } from './modules/employees/employees.service';
+import { DocumentTypeModule } from './modules/document-type/document-type.module';
+import { EmployeeModule } from './modules/employees/employees.module';
+import { PrismaModule } from './database/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     ConfigModule.forRoot({
       load: [appConfig],
       isGlobal: true,
       envFilePath: '../.env',
     }),
-    DocumentTypesModule,
+    DocumentTypeModule,
+    EmployeeModule
   ],
-  controllers: [AppController, DocumentTypesController],
+  controllers: [AppController,],
   providers: [
     AppService, 
-    PrismaService, 
-    DocumentTypesService,
-    {
-      provide: DOCUMENT_TYPE_REPOSITORY,
-      useClass: DocumentTypeRepository,
-    },
+    DocumentTypeService,
+    EmployeeService
   ],
 })
 export class AppModule {}

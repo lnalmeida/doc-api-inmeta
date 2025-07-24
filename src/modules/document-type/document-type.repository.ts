@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { IDocumentTypeRepository } from './interfaces/document-type.repository.interface';
-import { DocumentType } from '@prisma/client';
+import { DocumentType } from './entities/document-type.entity';
 import { CreateDocumentTypeDto } from './dtos/create-document-type.dto';
 import { UpdateDocumentTypeDto } from './dtos/update-document-type.dto';
 

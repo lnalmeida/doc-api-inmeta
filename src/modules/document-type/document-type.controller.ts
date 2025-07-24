@@ -1,16 +1,14 @@
-// src/modules/document-types/document-types.controller.ts
-
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
-import { DocumentTypesService } from './document-types.service';
+import { DocumentTypeService } from './document-type.service';
 import { CreateDocumentTypeDto } from './dtos/create-document-type.dto';
 import { UpdateDocumentTypeDto } from './dtos/update-document-type.dto';
 import { DocumentTypeResponseDto } from './dtos/document-type-response.dto';
 import { ApiTags, ApiResponse, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 
-@ApiTags('document-types') // Agrupa os endpoints no Swagger
-@Controller('document-types') // Define o prefixo da rota
-export class DocumentTypesController {
-  constructor(private readonly documentTypesService: DocumentTypesService) {}
+@ApiTags('document-type') 
+@Controller('document-type') 
+export class DocumentTypeController {
+  constructor(private readonly documentTypeService: DocumentTypeService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -20,7 +18,7 @@ export class DocumentTypesController {
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Tipo de documento com o mesmo nome já existe.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Dados de entrada inválidos.' })
   async create(@Body() createDocumentTypeDto: CreateDocumentTypeDto): Promise<DocumentTypeResponseDto> {
-    const documentType = await this.documentTypesService.create(createDocumentTypeDto);
+    const documentType = await this.documentTypeService.create(createDocumentTypeDto);
     return new DocumentTypeResponseDto(documentType);
   }
 
@@ -29,7 +27,7 @@ export class DocumentTypesController {
   @ApiOperation({ summary: 'Lista todos os tipos de documentos' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Lista de tipos de documentos.', type: [DocumentTypeResponseDto] })
   async findAll(): Promise<DocumentTypeResponseDto[]> {
-    const documentTypes = await this.documentTypesService.findAll();
+    const documentTypes = await this.documentTypeService.findAll();
     return documentTypes.map(dt => new DocumentTypeResponseDto(dt));
   }
 
@@ -40,7 +38,7 @@ export class DocumentTypesController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Detalhes do tipo de documento.', type: DocumentTypeResponseDto })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Tipo de documento não encontrado.' })
   async findOne(@Param('id') id: string): Promise<DocumentTypeResponseDto> {
-    const documentType = await this.documentTypesService.findOne(id);
+    const documentType = await this.documentTypeService.findOne(id);
     return new DocumentTypeResponseDto(documentType);
   }
 
@@ -54,7 +52,7 @@ export class DocumentTypesController {
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Tipo de documento com o mesmo nome já existe.' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Dados de entrada inválidos.' })
   async update(@Param('id') id: string, @Body() updateDocumentTypeDto: UpdateDocumentTypeDto): Promise<DocumentTypeResponseDto> {
-    const documentType = await this.documentTypesService.update(id, updateDocumentTypeDto);
+    const documentType = await this.documentTypeService.update(id, updateDocumentTypeDto);
     return new DocumentTypeResponseDto(documentType);
   }
 
@@ -65,6 +63,6 @@ export class DocumentTypesController {
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Tipo de documento excluído com sucesso.' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Tipo de documento não encontrado.' })
   async remove(@Param('id') id: string): Promise<void> {
-    await this.documentTypesService.remove(id);
+    await this.documentTypeService.remove(id);
   }
 }
