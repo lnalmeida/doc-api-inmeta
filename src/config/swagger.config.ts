@@ -6,8 +6,8 @@ const setupSwagger = (app: INestApplication) => {
         .setTitle('API de Gerenciamento de Documentação de Colaboradores')
         .setDescription('API RESTful para gerenciar a documentação obrigatória de colaboradores e o status de envio.')
         .setVersion('1.0')
-        .addTag('employees', 'Operações relacionadas a colaboradores')
-        .addTag('document-types', 'Operações relacionadas a tipos de documentos')
+        .addTag('employee', 'Operações relacionadas a colaboradores')
+        .addTag('document-type', 'Operações relacionadas a tipos de documentos')
         .addTag('employee-documents', 'Operações de vinculação e status de documentos de colaboradores')
         .build();
 
