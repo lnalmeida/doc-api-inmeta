@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id         String   @id @default(uuid()) 
+  name       String   
+  cpf        String   @unique 
+  hiredAt    DateTime @map("hired_at") 
+  employeeDocuments EmployeeDocument[]
+  createdAt  DateTime @map("created_at") @default(now()) 
+  updatedAt  DateTime @map("updated_at") @updatedAt
+
+  @@map("employees") 
+  @@index([name]) 
+  @@index([hiredAt]) 
+}
+
+model DocumentType {
+  id         String @id @default(uuid()) 
+  name       String @unique 
+  employeeDocuments EmployeeDocument[]
+  createdAt  DateTime @map("created_at") @default(now()) 
+  updatedAt  DateTime @map("updated_at") @updatedAt 
+  
+
+  @@map("document_types") 
+  @@index([name]) 
+}
+
+model EmployeeDocument {
+  id            String   @id @default(uuid()) 
+  status        DocumentStatus 
+  employeeId    String
+  documentTypeId String
+  submittedAt   DateTime? @map("submitted_at")
+  createdAt     DateTime @map("created_at") @default(now()) 
+  updatedAt     DateTime @map("updated_at") @updatedAt 
+
+
+  // relacionamentos
+  employee      Employee    @relation(fields: [employeeId], references: [id])
+  documentType  DocumentType @relation(fields: [documentTypeId], references: [id])
+
+
+  // Garante que cada colaborador só tenha um registro para cada tipo de documento
+  @@unique([employeeId, documentTypeId])
+  @@map("employee_documents") 
+
+  // Índices 
+  @@index([status])
+  @@index([employeeId])
+  @@index([documentTypeId])
+  @@index([employeeId, status]) // busca por colaborador e status
+  @@index([documentTypeId, status]) // busca por tipo de documento e status
+}
+
+enum DocumentStatus {
+  PENDING   
+  SUBMITTED 
+}
