@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { EmployeeService } from './employee.service';
+import { EmployeeService } from './employees.service';
 import { EmployeeController } from './employee.controller';
 import { EmployeeRepository } from './employee.repository';
 import { EMPLOYEE_REPOSITORY } from './interfaces/employee.repository.interface';
