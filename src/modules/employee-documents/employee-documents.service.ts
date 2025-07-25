@@ -49,7 +49,6 @@ export class EmployeeDocumentsService {
   ): Promise<EmployeeDocument[]> {
     const { employeeId, documentTypeIds } = data;
 
-    // 1. Verificar se o colaborador existe
     const employee = await this.employeeRepository.findEmployeeById(employeeId);
     if (!employee) {
       throw new NotFoundException(
@@ -59,7 +58,9 @@ export class EmployeeDocumentsService {
 
     // 2. Verificar se todos os tipos de documentos existem
     const foundDocumentTypes =
-      await this.documentTypeRepository.findAllDocumentTypes({}); // Busca todos para validação eficiente
+      await this.documentTypeRepository
+        .findAllDocumentTypes({}); 
+    
     const existingDocumentTypeIds = new Set(
       foundDocumentTypes.data.map((dt: any) => dt.id),
     );
@@ -76,7 +77,19 @@ export class EmployeeDocumentsService {
       );
     }
 
-    // 3. Vincular os documentos
+    await this.verifyDuplicateDocumentAssignments(
+        employeeId,
+        documentTypeIds,
+        employee,
+        foundDocumentTypes.data
+    );
+    
+    const documentsToCreate = documentTypeIds.filter(id =>
+        !foundDocumentTypes.data // Reutiliza a lista para filtrar IDs que seriam criados
+            .filter(dt => dt.id === id)
+            .some(dt => existingDocumentTypeIds.has(dt.id)) // Esta linha precisa ser ajustada após checkAndHandle...
+    );
+
     return this.employeeDocumentRepository.assignDocumentTypes(
       employeeId,
       documentTypeIds,
@@ -197,4 +210,28 @@ export class EmployeeDocumentsService {
       data: mappedData,
     };
   }
+
+  private async verifyDuplicateDocumentAssignments(
+      employeeId: string,
+      documentTypeIds: string[],
+      employee: Employee,
+      allDocumentTypesInSystem: DocumentType[], // Ajuste para o tipo DocumentType[]
+    ): Promise<void> {
+      const currentlyAssignedDocuments = await this.employeeDocumentRepository.findEmployeeDocumentsByEmployeeId(employeeId);
+      const currentlyAssignedDocumentTypeIds = new Set(
+        currentlyAssignedDocuments.map(doc => doc.documentTypeId)
+      );
+
+      const alreadyAssignedDocumentTypes = documentTypeIds.filter(id => currentlyAssignedDocumentTypeIds.has(id));
+
+      if (alreadyAssignedDocumentTypes.length > 0) {
+        const alreadyAssignedNames = allDocumentTypesInSystem
+          .filter(dt => alreadyAssignedDocumentTypes.includes(dt.id))
+          .map(dt => dt.name);
+
+        throw new ConflictException(
+          `O(s) tipo(s) de documento "${alreadyAssignedNames.join(', ')}" já está(ão) vinculado(s) ao colaborador ${employee.name}.`,
+        );
+      }
+    }
 }

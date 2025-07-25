@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { IEmployeeDocumentRepository } from './interfaces/employee-documents.repository.interface';
 import { DocumentStatus, EmployeeDocument, Prisma } from '@prisma/client';
@@ -24,30 +24,28 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
       select: { documentTypeId: true }
     });
 
-    const existingIds = existing.map(doc => doc.documentTypeId);
-    const newIds = documentTypeIds.filter(id => !existingIds.includes(id));
+    const createData = documentTypeIds.map(documentTypeId => ({
+      employeeId,
+      documentTypeId,
+      status: DocumentStatus.PENDING,
+    }));
 
-    if(newIds.length > 0) {
-
-      const createData = documentTypeIds.map(documentTypeId => ({
-        employeeId,
-        documentTypeId,
-        status: DocumentStatus.PENDING,
-      }));
-
+    if(createData.length > 0) {
       await this.prisma.employeeDocument.createMany({
         data: createData,
       });
-
-    };    
-
-    // Retorna os documentos recém-criados ou existentes
+    }
+    
     return this.prisma.employeeDocument.findMany({
       where: {
         employeeId,
         documentTypeId: {
           in: documentTypeIds,
         },
+      },
+      include: {
+        employee: true,
+        documentType: true,
       },
     });
   }
@@ -137,4 +135,5 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
       },
     });
   }
+
 }
