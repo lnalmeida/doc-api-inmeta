@@ -4,7 +4,7 @@ import { IEmployeeDocumentRepository } from './interfaces/employee-documents.rep
 import { DocumentStatus, EmployeeDocument, Prisma } from '@prisma/client';
 import { ListPendingDocumentsDto } from '../employee-documents/dtos/list-pending-documents.dto';
 import { PaginationResult } from '../../common/types/pagination.types';
-import { EmployeeDocumentWithRelations } from 'src/common/types/EmployeeDocumentTypes';
+import { EmployeeDocumentWithDocumentType, EmployeeDocumentWithRelations } from 'src/common/types/EmployeeDocumentTypes';
 
 
 @Injectable()
@@ -76,7 +76,7 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
     });
   }
 
-  async findEmployeeDocumentsByEmployeeId(employeeId: string): Promise<EmployeeDocumentWithRelations[]> {
+  async findEmployeeDocumentsByEmployeeId(employeeId: string): Promise<EmployeeDocumentWithDocumentType[]> {
     return this.prisma.employeeDocument.findMany({
       where: { employeeId },
       include: {
