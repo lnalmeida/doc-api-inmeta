@@ -59,9 +59,9 @@ export class EmployeeDocumentsService {
 
     // 2. Verificar se todos os tipos de documentos existem
     const foundDocumentTypes =
-      await this.documentTypeRepository.findAllDocumentTypes(); // Busca todos para validação eficiente
+      await this.documentTypeRepository.findAllDocumentTypes({}); // Busca todos para validação eficiente
     const existingDocumentTypeIds = new Set(
-      foundDocumentTypes.map((dt: any) => dt.id),
+      foundDocumentTypes.data.map((dt: any) => dt.id),
     );
 
     const invalidDocumentTypeIds = documentTypeIds.filter(

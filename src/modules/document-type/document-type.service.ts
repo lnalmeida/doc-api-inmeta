@@ -3,6 +3,8 @@ import { DocumentType } from '@prisma/client';
 import { CreateDocumentTypeDto } from './dtos/create-document-type.dto';
 import { UpdateDocumentTypeDto } from './dtos/update-document-type.dto';
 import { IDocumentTypeRepository, DOCUMENT_TYPE_REPOSITORY } from './interfaces/document-type.repository.interface';
+import { PaginationResult } from 'src/common/types/pagination.types';
+import { ListDocumentTypeDto } from './dtos/list-document-types.dto';
 
 @Injectable()
 export class DocumentTypeService {
@@ -19,8 +21,8 @@ export class DocumentTypeService {
     return this.documentTypeRepository.createDocumentType(data);
   }
 
-  async findAll(): Promise<DocumentType[]> {
-    return this.documentTypeRepository.findAllDocumentTypes();
+  async findAll(filters: ListDocumentTypeDto): Promise<PaginationResult<DocumentType>> {
+    return this.documentTypeRepository.findAllDocumentTypes(filters);
   }
 
   async findOne(id: string): Promise<DocumentType> {
@@ -38,7 +40,7 @@ export class DocumentTypeService {
       throw new NotFoundException(`Tipo de documento com ID "${id}" não encontrado.`);
     }
 
-    // Se estiver tentando atualizar o nome, verificar unicidade
+    // Se estiver tentando atualizar o nome, verificar se é único
     if (data.name && data.name !== existingType.name) {
       const typeWithSameName = await this.documentTypeRepository.findDocumentTypeByName(data.name);
       if (typeWithSameName && typeWithSameName.id !== id) {
