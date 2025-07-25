@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { DocumentTypeService } from './document-type.service';
 import { CreateDocumentTypeDto } from './dtos/create-document-type.dto';
 import { UpdateDocumentTypeDto } from './dtos/update-document-type.dto';
 import { DocumentTypeResponseDto } from './dtos/document-type-response.dto';
-import { ApiTags, ApiResponse, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiOperation, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ListDocumentTypeDto } from './dtos/list-document-types.dto';
+import { PaginationResult } from 'src/common/types/pagination.types';
 
 @ApiTags('document-type') 
 @Controller('document-type') 
@@ -25,10 +27,17 @@ export class DocumentTypeController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Lista todos os tipos de documentos' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número da página (padrão: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número de itens por página (padrão: 10)' })
+  @ApiQuery({ name: 'name', required: false, type: String, description: 'Filtrar por nome do tipo de documento (busca parcial)' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Lista de tipos de documentos.', type: [DocumentTypeResponseDto] })
-  async findAll(): Promise<DocumentTypeResponseDto[]> {
-    const documentTypes = await this.documentTypeService.findAll();
-    return documentTypes.map(dt => new DocumentTypeResponseDto(dt));
+  async findAll(@Query() filters: ListDocumentTypeDto): Promise<PaginationResult<DocumentTypeResponseDto>> {
+    const result = await this.documentTypeService.findAll(filters);
+    const data =  result.data.map(dt => new DocumentTypeResponseDto(dt));
+    return {
+      ...result,
+      data,
+    };
   }
 
   @Get(':id')

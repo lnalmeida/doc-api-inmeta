@@ -3,6 +3,8 @@ import { Employee } from '@prisma/client';
 import { CreateEmployeeDto } from './dtos/create-employee.dto';
 import { UpdateEmployeeDto } from './dtos/update-employee.dto';
 import { IEmployeeRepository, EMPLOYEE_REPOSITORY } from './interfaces/employee.repository.interface';
+import { ListEmployeeDto } from './dtos/list-employee.dto';
+import { PaginationResult } from 'src/common/types/pagination.types';
 
 @Injectable()
 export class EmployeeService {
@@ -19,8 +21,8 @@ export class EmployeeService {
     return this.employeeRepository.createEmployee(data);
   }
 
-  async findAll(): Promise<Employee[]> {
-    return this.employeeRepository.findAllEmployees();
+  async findAll(filters: ListEmployeeDto): Promise<PaginationResult<Employee>> {
+    return this.employeeRepository.findAllEmployees(filters);
   }
 
   async findOne(id: string): Promise<Employee> {
