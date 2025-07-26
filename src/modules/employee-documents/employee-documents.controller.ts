@@ -179,7 +179,7 @@ export class EmployeeDocumentsController {
   })
   async listPendingDocuments(
     @Query() filters: ListPendingDocumentsDto,
-  ): Promise<PaginationResult<PendingDocumentResponseDto>> {
+  ): Promise<PaginationResult<EmployeeDocumentStatusDto>> {
     return this.employeeDocumentsService.listPendingDocuments(filters);
   }
 }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { IEmployeeDocumentRepository } from './interfaces/employee-documents.repository.interface';
 import { DocumentStatus, EmployeeDocument, Prisma } from '@prisma/client';
@@ -86,9 +86,10 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
     });
   }
 
-  async findPendingDocuments(filters: ListPendingDocumentsDto): Promise<PaginationResult<EmployeeDocument>> {
+  async findPendingDocuments(filters: ListPendingDocumentsDto): Promise<PaginationResult<EmployeeDocumentWithRelations>> {
     const { page = 1, limit = 10, employeeId: filterEmployeeId, documentTypeId: filterDocumentTypeId } = filters;
     const offset = (page - 1) * limit;
+    console.log(filterEmployeeId, filterDocumentTypeId)
 
     const where: Prisma.EmployeeDocumentWhereInput = {
       status: DocumentStatus.PENDING,

@@ -14,10 +14,12 @@ export class EmployeeService {
   ) {}
 
   async create(data: CreateEmployeeDto): Promise<Employee> {
-    const existingEmployee = await this.employeeRepository.findEmployeeByCpf(data.cpf);
+    const cleanedCpf = data.cpf.replace(/\D/g, '');
+    const existingEmployee = await this.employeeRepository.findEmployeeByCpf(cleanedCpf);
     if (existingEmployee) {
       throw new ConflictException(`Um colaborador com o CPF "${data.cpf}" já existe.`);
     }
+    data.cpf = cleanedCpf; 
     return this.employeeRepository.createEmployee(data);
   }
 
