@@ -8,6 +8,9 @@ import { CreateDocumentTypeDto } from "src/modules/document-type/dtos/create-doc
 import { DocumentTypeResponseDto } from "src/modules/document-type/dtos/document-type-response.dto";
 import { UpdateDocumentTypeDto } from "src/modules/document-type/dtos/update-document-type.dto";
 import { IDocumentTypeRepository, DOCUMENT_TYPE_REPOSITORY } from "src/modules/document-type/interfaces/document-type.repository.interface";
+import { config } from "dotenv";
+
+config({ path: '.env.test', override: true });
 
 // Mocks de dados
 const mockDocType1: DocumentType = { 

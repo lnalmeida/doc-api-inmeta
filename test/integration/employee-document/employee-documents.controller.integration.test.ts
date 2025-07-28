@@ -1,5 +1,6 @@
 import { TestingModule, Test } from "@nestjs/testing";
 import { DocumentStatus } from "@prisma/client";
+import { config } from "dotenv";
 import { PaginationGroupedPendingDocumentResult } from "src/common/types/pagination.types";
 import { IDocumentTypeRepository, DOCUMENT_TYPE_REPOSITORY } from "src/modules/document-type/interfaces/document-type.repository.interface";
 import { AssignDocumentTypesDto } from "src/modules/employee-documents/dtos/assign-document-types.dto";
@@ -10,6 +11,8 @@ import { EmployeeDocumentsController } from "src/modules/employee-documents/empl
 import { EmployeeDocumentsService } from "src/modules/employee-documents/employee-documents.service";
 import { IEmployeeDocumentRepository, EMPLOYEE_DOCUMENT_REPOSITORY } from "src/modules/employee-documents/interfaces/employee-documents.repository.interface";
 import { IEmployeeRepository, EMPLOYEE_REPOSITORY } from "src/modules/employees/interfaces/employee.repository.interface";
+
+config({ path: '.env.test', override: true });
 
 // Mocks de dados simplificados para este nível de teste
 const mockEmployeeId = 'employee-id-test-1';

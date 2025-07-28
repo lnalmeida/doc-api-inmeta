@@ -10,6 +10,9 @@ import { EmployeeResponseDto } from 'src/modules/employees/dtos/employee-respons
 import { ListEmployeeDto } from 'src/modules/employees/dtos/list-employee.dto';
 import { UpdateEmployeeDto } from 'src/modules/employees/dtos/update-employee.dto';
 import { IEmployeeRepository, EMPLOYEE_REPOSITORY } from 'src/modules/employees/interfaces/employee.repository.interface';
+import { config } from 'dotenv';
+
+config({ path: '.env.test', override: true });
 
 // Mocks de dados
 const mockEmployee1: Employee = { 

@@ -7,7 +7,8 @@ import { DocumentTypeModule } from './modules/document-type/document-type.module
 import { EmployeeModule } from './modules/employees/employee.module';
 import { PrismaModule } from './database/prisma.module';
 import { EmployeeDocumentsModule } from './modules/employee-documents/employee-documents.module';
-import { databaseConfig } from './config/database.config';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -17,11 +18,25 @@ import { databaseConfig } from './config/database.config';
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'test' ? '../.env.test' : '../.env',
     }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          name: 'Throttler',
+          ttl: 60000,
+          limit: 10
+        }
+      ]
+    }),
     DocumentTypeModule,
     EmployeeModule,
     EmployeeDocumentsModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
 })
 export class AppModule {}
