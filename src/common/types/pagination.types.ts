@@ -35,3 +35,12 @@ export interface PaginationResult<T> {
   limit: number;
   totalPages: number;
 }
+
+export interface PaginationGroupedPendingDocumentResult<T> {
+  data: T[];
+  totalEmployees: number; // Total de colaboradores com pendências
+  totalPendingDocuments: number; // Total de documentos pendentes
+  page: number;
+  limit: number;
+  totalPages: number;
+}

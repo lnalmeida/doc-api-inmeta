@@ -16,7 +16,7 @@ import { UnassignDocumentTypesDto } from './dtos/unassign-document-types.dto';
 import { SubmitDocumentDto } from './dtos/submit-document.dto';
 import { EmployeeDocumentStatusDto } from './dtos/employee-document-status.dto';
 import { ListPendingDocumentsDto } from './dtos/list-pending-documents.dto';
-import { PaginationResult } from '../../common/types/pagination.types';
+import { PaginationGroupedPendingDocumentResult, PaginationResult } from '../../common/types/pagination.types';
 import { PendingDocumentResponseDto } from './dtos/pending-document-response.dto';
 import {
   ApiTags,
@@ -179,7 +179,7 @@ export class EmployeeDocumentsController {
   })
   async listPendingDocuments(
     @Query() filters: ListPendingDocumentsDto,
-  ): Promise<PaginationResult<EmployeeDocumentStatusDto>> {
+  ): Promise<PaginationGroupedPendingDocumentResult<EmployeeDocumentStatusDto>> {
     return this.employeeDocumentsService.listPendingDocuments(filters);
   }
 }

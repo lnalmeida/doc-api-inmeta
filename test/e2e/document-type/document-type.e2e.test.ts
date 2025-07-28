@@ -1,18 +1,23 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../../../src/app.module'; 
-import { PrismaService } from '../../../../src/database/prisma.service'; 
+import { AppModule } from '../../../src/app.module'; 
+import { PrismaService } from '../../../src/database/prisma.service'; 
+import { config } from 'dotenv';
+
+config({ path: '.env.test', override: true });
 
 describe('DocumentTypeController (e2e)', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
 
+  process.env.NODE_ENV = 'test';
   beforeAll(async () => {
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
+    
     app = moduleFixture.createNestApplication();
 
     prismaService = moduleFixture.get<PrismaService>(PrismaService);
@@ -22,15 +27,17 @@ describe('DocumentTypeController (e2e)', () => {
       forbidNonWhitelisted: true,
       transform: true,
     }));
-    app.useGlobalFilters(new (await import('../../../../src/common/filters/global-http-exception.filter')).AllExceptionsFilter());
+    app.useGlobalFilters(new (await import('../../../src/common/filters/global-http-exception.filter')).AllExceptionsFilter());
 
     await app.init();
   });
 
   beforeEach(async () => {
-    await prismaService.employeeDocument.deleteMany({}); 
-    await prismaService.employee.deleteMany({});        
-    await prismaService.documentType.deleteMany({});     
+    await prismaService.$transaction([
+      prismaService.employeeDocument.deleteMany({}),
+      prismaService.employee.deleteMany({}),
+      prismaService.documentType.deleteMany({}),
+    ]);
   });
 
   afterAll(async () => {
@@ -78,10 +85,15 @@ describe('DocumentTypeController (e2e)', () => {
     await request(app.getHttpServer()).post('/document-type').send({ name: 'Titulo de Eleitor'});
     await request(app.getHttpServer()).post('/document-type').send({ name: 'RG'});
 
+    const countInDb = await prismaService.documentType.count();
+    console.log(`[DEBUG - GET Docs] Total de documentos no DB antes do GET: ${countInDb}`);
+
 
     const res1 = await request(app.getHttpServer())
       .get('/document-type?page=1&limit=2')
       .expect(200);
+
+    console.log(`[DEBUG - GET Docs] Resposta da API (data.length): ${res1.body.data.length}, total: ${res1.body.total}`);
 
     expect(res1.body.data.length).toBe(2);
     expect(res1.body.total).toBe(3); 

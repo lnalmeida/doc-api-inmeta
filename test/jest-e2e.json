@@ -6,11 +6,11 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "maxWorkers": 1,
+  "runInBand": true,
+  "testTimeout": 30000,
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/src/$1"
   },
-  "roots": ["<rootDir>/test/e2e/"], 
-  "setupFilesAfterEnv": [],
-  "globalSetup": "<rootDir>/test/e2e/setup.e2e.ts",
-  "globalTeardown": "<rootDir>/test/e2e/tear-down.e2e.ts"
+  "roots": ["<rootDir>/test/e2e/"]
 }

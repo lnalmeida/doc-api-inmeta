@@ -34,7 +34,7 @@ export class DocumentTypeRepository implements IDocumentTypeRepository {
         where,
         skip: offset,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        // orderBy: { createdAt: 'desc' },
       }),
       this.prismaService.documentType.count({ where }),
     ]);

@@ -60,6 +60,33 @@ const mockEmployeeDocumentCPF_Submitted: EmployeeDocumentWithDocumentType = {
   submittedAt: new Date(),
 };
 
+const mockEmployee2: Employee = { // <-- NOVO MOCK DE COLABORADOR
+  id: 'employee-id-2',
+  name: 'Maria Teste',
+  cpf: '999.888.777-66',
+  hiredAt: new Date(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const mockDocumentTypePIS: DocumentType = { // <-- NOVO MOCK DE TIPO DE DOCUMENTO
+  id: 'doc-type-id-pis',
+  name: 'PIS',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const mockEmployeeDocumentPIS_Pending_Emp2: EmployeeDocumentWithDocumentType = { // <-- NOVO MOCK DE DOCUMENTO
+  id: 'emp-doc-id-pis-pending-emp2',
+  employeeId: mockEmployee2.id,
+  documentTypeId: mockDocumentTypePIS.id,
+  status: DocumentStatus.PENDING,
+  submittedAt: null,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  documentType: mockDocumentTypePIS,
+};
+
 
 describe('EmployeeDocumentsService', () => {
   let service: EmployeeDocumentsService;
@@ -308,29 +335,39 @@ describe('EmployeeDocumentsService', () => {
   });
 
   // --- Testes para listPendingDocuments() ---
-  describe('listarDocumentosPendentes', () => {
-    it('deve retornar uma lista paginada de documentos pendentes', async () => {
-      const filters = { page: 1, limit: 10 };
+ describe('listarDocumentosPendentes', () => {
+    it('deve retornar uma lista paginada de documentos pendentes agrupados por colaborador', async () => { // Nome do teste atualizado
+      const filters = { page: 1, limit: 1 }; // Limite 1 para testar paginação de colaboradores
+      
+      // ATENÇÃO: Adicione documentos de outro colaborador
       const pendingDocsWithRelations: EmployeeDocumentWithRelations[] = [
-        {
+        { // Documento do mockEmployee
             ...mockEmployeeDocumentCPF_Pending,
             employee: mockEmployee,
             documentType: mockDocumentTypeCPF,
-            id: 'id-pending-1'
-        },
-        {
+            id: 'id-pending-emp1-doc1'
+        } as EmployeeDocumentWithRelations, // Cast explícito
+        { // Outro documento do mockEmployee
             ...mockEmployeeDocumentRG_Pending,
             employee: mockEmployee,
             documentType: mockDocumentTypeRG,
-            id: 'id-pending-2'
-        },
+            id: 'id-pending-emp1-doc2'
+        } as EmployeeDocumentWithRelations,
+        { // Documento do mockEmployee2 (importante para ter 2 grupos)
+            ...mockEmployeeDocumentPIS_Pending_Emp2,
+            employee: mockEmployee2,
+            documentType: mockDocumentTypePIS,
+            id: 'id-pending-emp2-doc1'
+        } as EmployeeDocumentWithRelations,
       ];
+
+      // Total de documentos pendentes (3)
+      const totalPendingDocuments = pendingDocsWithRelations.length;
+
       const paginationResult: PaginationResult<EmployeeDocumentWithRelations> = {
         data: pendingDocsWithRelations,
-        total: 2,
-        page: 1,
-        limit: 10,
-        totalPages: 1,
+        total: totalPendingDocuments,
+        page: 1, limit: 10, totalPages: 1 // Estes são os dados antes do agrupamento
       };
 
       mockEmployeeDocumentRepository.findPendingDocuments.mockResolvedValue(paginationResult);
@@ -338,28 +375,53 @@ describe('EmployeeDocumentsService', () => {
       const result = await service.listPendingDocuments(filters);
 
       expect(result).toBeDefined();
-      expect(result.data.length).toBe(2);
-      expect(result.data[0].status).toBe(DocumentStatus.PENDING);
-      expect(result.data[0].employeeName).toBe(mockEmployee.name);
-      expect(mockEmployeeDocumentRepository.findPendingDocuments).toHaveBeenCalledWith(filters);
+      expect(result.data.length).toBe(1); // Espera 1 COLABORADOR na primeira página (limit=1)
+      expect(result.totalEmployees).toBe(2); // Agora, 2 colaboradores agrupados (João e Maria)
+      expect(result.totalPendingDocuments).toBe(totalPendingDocuments); // Total de documentos pendentes (3)
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(1);
+      expect(result.totalPages).toBe(2); // 2 colaboradores / 1 limite por página = 2 páginas
+
+      expect(result.data[0].employeeId).toBe(mockEmployee.id);
+      expect(result.data[0].documents.length).toBe(2); // 2 documentos para João
+      expect(result.data[0].documents.every(d => d.status === DocumentStatus.PENDING)).toBeTruthy();
+
+      // Testa a segunda página
+      const filtersPage2 = { page: 2, limit: 1 };
+      const resPage2 = await service.listPendingDocuments(filtersPage2); // Chama o serviço novamente para simular a 2a página
+
+      expect(resPage2.data.length).toBe(1);
+      expect(resPage2.totalEmployees).toBe(2);
+      expect(resPage2.totalPendingDocuments).toBe(totalPendingDocuments);
+      expect(resPage2.page).toBe(2);
+      expect(resPage2.limit).toBe(1);
+      expect(resPage2.totalPages).toBe(2);
+      expect(resPage2.data[0].employeeId).toBe(mockEmployee2.id); // Deve ser o segundo colaborador
+      expect(resPage2.data[0].documents.length).toBe(1); // 1 documento para Maria
     });
 
+    // ... (restante do seu describe, ajustando as expectativas para totalEmployees e totalPendingDocuments)
     it('deve retornar uma lista vazia se não houver documentos pendentes', async () => {
       const filters = { page: 1, limit: 10 };
       const emptyPaginationResult: PaginationResult<EmployeeDocumentWithRelations> = {
         data: [],
-        total: 0,
-        page: 1,
-        limit: 10,
-        totalPages: 0,
+        total: 0, page: 1, limit: 10, totalPages: 0
       };
 
       mockEmployeeDocumentRepository.findPendingDocuments.mockResolvedValue(emptyPaginationResult);
 
       const result = await service.listPendingDocuments(filters);
 
-      expect(result).toEqual(emptyPaginationResult);
+      expect(result).toEqual({ // Deve comparar com o novo formato de retorno agrupado
+        data: [],
+        totalEmployees: 0,
+        totalPendingDocuments: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0,
+      });
       expect(mockEmployeeDocumentRepository.findPendingDocuments).toHaveBeenCalledWith(filters);
     });
   });
+
 });

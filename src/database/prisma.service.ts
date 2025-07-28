@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { PrismaClient } from "@prisma/client";
 
 
@@ -6,7 +7,12 @@ import { PrismaClient } from "@prisma/client";
 export class PrismaService extends PrismaClient {
   constructor() {
     super({
-      log: ['query', 'info', 'warn', 'error'],
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
+      log: ['info', 'warn', 'error'],
     });
   }
 

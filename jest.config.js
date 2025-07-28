@@ -14,7 +14,7 @@ module.exports = {
   roots: ['<rootDir>/src/', '<rootDir>/test/'], 
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1', 
-  },
+  },  
 };
 
 // Parte removida do package.json pra resolver a incompatibilidade com o ts-jest

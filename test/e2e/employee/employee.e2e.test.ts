@@ -3,11 +3,17 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common"
 import { AppModule } from "src/app.module";
 import { PrismaService } from "src/database/prisma.service";
+import { config } from 'dotenv';
 
+config({ path: '.env.test', override: true });
 
 describe('EmployeeController (e2e)', () =>{
     let app: INestApplication;
     let prismaService: PrismaService;
+
+    console.log('Iniciando testes E2E para EmployeeController ambiente:', process.env.NODE_ENV);
+    console.log('DATABASE_URL em uso:', process.env.DATABASE_URL);
+
 
     const employee1Data = { name: 'Ana Souza', cpf: '520.142.890-85', hiredAt: '2023-01-01T00:00:00.000Z' };
     const employee2Data = { name: 'Bruno Silva', cpf: '10458411027', hiredAt: '2023-01-02T00:00:00.000Z' };
@@ -27,15 +33,17 @@ describe('EmployeeController (e2e)', () =>{
           forbidNonWhitelisted: true,
           transform: true,
         }));
-        app.useGlobalFilters(new (await import('../../../../src/common/filters/global-http-exception.filter')).AllExceptionsFilter());
+        app.useGlobalFilters(new (await import('../../../src/common/filters/global-http-exception.filter')).AllExceptionsFilter());
 
         await app.init();
     });
 
     beforeEach(async () => {
-        await prismaService.employeeDocument.deleteMany({}); 
-        await prismaService.employee.deleteMany({});        
-        await prismaService.documentType.deleteMany({});     
+        await prismaService.$transaction([
+            prismaService.employeeDocument.deleteMany({}),
+            prismaService.employee.deleteMany({}),
+            prismaService.documentType.deleteMany({}),
+        ]);
     });
 
     afterAll(async () => {

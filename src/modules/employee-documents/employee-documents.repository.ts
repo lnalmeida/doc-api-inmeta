@@ -89,7 +89,6 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
   async findPendingDocuments(filters: ListPendingDocumentsDto): Promise<PaginationResult<EmployeeDocumentWithRelations>> {
     const { page = 1, limit = 10, employeeId: filterEmployeeId, documentTypeId: filterDocumentTypeId } = filters;
     const offset = (page - 1) * limit;
-    console.log(filterEmployeeId, filterDocumentTypeId)
 
     const where: Prisma.EmployeeDocumentWhereInput = {
       status: DocumentStatus.PENDING,

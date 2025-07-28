@@ -29,7 +29,7 @@ import {
 import { DocumentDetailDto, EmployeeDocumentStatusDto } from './dtos/employee-document-status.dto';
 import { EmployeeDocumentMapper } from './utils/employee-document.mapper';
 import { ListPendingDocumentsDto } from './dtos/list-pending-documents.dto';
-import { PaginationResult } from '../../common/types/pagination.types';
+import { PaginationGroupedPendingDocumentResult, PaginationResult } from '../../common/types/pagination.types';
 import { PendingDocumentResponseDto } from './dtos/pending-document-response.dto';
 import { EmployeeDocumentWithRelations } from 'src/common/types/EmployeeDocumentTypes';
 
@@ -178,11 +178,13 @@ export class EmployeeDocumentsService {
 
   async listPendingDocuments(
     filters: ListPendingDocumentsDto,
-  ): Promise<PaginationResult<EmployeeDocumentStatusDto>> {
+  ): Promise<PaginationGroupedPendingDocumentResult<EmployeeDocumentStatusDto>> {
    
     const result = await this.employeeDocumentRepository.findPendingDocuments(
       filters
     );
+
+    const totalPendingDocuments = result.data.length;
 
     const groupedData = this.groupDocumentsByEmployee(result.data);
 
@@ -195,7 +197,8 @@ export class EmployeeDocumentsService {
 
     return {
       data: paginatedGroupedData,
-      total: totalGroupedItems,
+      totalEmployees: totalGroupedItems,
+      totalPendingDocuments,
       page,
       limit,
       totalPages: totalPagesGrouped
