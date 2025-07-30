@@ -9,34 +9,35 @@ import { PrismaModule } from './database/prisma.module';
 import { EmployeeDocumentsModule } from './modules/employee-documents/employee-documents.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { databaseConfig } from './config/database.config';
 
 @Module({
   imports: [
     PrismaModule,
     ConfigModule.forRoot({
-      load: [appConfig],
+      load: [appConfig, databaseConfig],
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'test' ? '../.env.test' : '../.env',
     }),
     ThrottlerModule.forRoot({
       throttlers: [
         {
           name: 'Throttler',
           ttl: 60000,
-          limit: 10
-        }
-      ]
+          limit: 10,
+        },
+      ],
     }),
     DocumentTypeModule,
     EmployeeModule,
-    EmployeeDocumentsModule
+    EmployeeDocumentsModule,
   ],
   controllers: [AppController],
-  providers: [AppService,
+  providers: [
+    AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

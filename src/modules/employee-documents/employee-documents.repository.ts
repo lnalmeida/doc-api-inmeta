@@ -4,38 +4,39 @@ import { IEmployeeDocumentRepository } from './interfaces/employee-documents.rep
 import { DocumentStatus, EmployeeDocument, Prisma } from '@prisma/client';
 import { ListPendingDocumentsDto } from '../employee-documents/dtos/list-pending-documents.dto';
 import { PaginationResult } from '../../common/types/pagination.types';
-import { EmployeeDocumentWithDocumentType, EmployeeDocumentWithRelations } from 'src/common/types/EmployeeDocumentTypes';
-
+import {
+  EmployeeDocumentWithDocumentType,
+  EmployeeDocumentWithRelations,
+} from 'src/common/types/EmployeeDocumentTypes';
 
 @Injectable()
 export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async assignDocumentTypes(employeeId: string, documentTypeIds: string[]): Promise<EmployeeDocument[]> {
-    //Verifica se há duplicidade de docs antes da criação
-    // Usa createMany para inserir múltiplos registros de uma vez
-    // e retorna os count de registros criados/atualizados
-    // Para retornar os registros criados/atualizados, precisamos de um loop ou select adicional
+  async assignDocumentTypes(
+    employeeId: string,
+    documentTypeIds: string[],
+  ): Promise<EmployeeDocument[]> {
     const existing = await this.prisma.employeeDocument.findMany({
       where: {
-          employeeId,
-          documentTypeId: { in: documentTypeIds }
+        employeeId,
+        documentTypeId: { in: documentTypeIds },
       },
-      select: { documentTypeId: true }
+      select: { documentTypeId: true },
     });
 
-    const createData = documentTypeIds.map(documentTypeId => ({
+    const createData = documentTypeIds.map((documentTypeId) => ({
       employeeId,
       documentTypeId,
       status: DocumentStatus.PENDING,
     }));
 
-    if(createData.length > 0) {
+    if (createData.length > 0) {
       await this.prisma.employeeDocument.createMany({
         data: createData,
       });
     }
-    
+
     return this.prisma.employeeDocument.findMany({
       where: {
         employeeId,
@@ -50,7 +51,10 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
     });
   }
 
-  async unassignDocumentTypes(employeeId: string, documentTypeIds: string[]): Promise<void> {
+  async unassignDocumentTypes(
+    employeeId: string,
+    documentTypeIds: string[],
+  ): Promise<void> {
     await this.prisma.employeeDocument.deleteMany({
       where: {
         employeeId,
@@ -61,7 +65,10 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
     });
   }
 
-  async submitDocument(employeeId: string, documentTypeId: string): Promise<EmployeeDocument> {
+  async submitDocument(
+    employeeId: string,
+    documentTypeId: string,
+  ): Promise<EmployeeDocument> {
     return this.prisma.employeeDocument.update({
       where: {
         employeeId_documentTypeId: {
@@ -76,18 +83,27 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
     });
   }
 
-  async findEmployeeDocumentsByEmployeeId(employeeId: string): Promise<EmployeeDocumentWithDocumentType[]> {
+  async findEmployeeDocumentsByEmployeeId(
+    employeeId: string,
+  ): Promise<EmployeeDocumentWithDocumentType[]> {
     return this.prisma.employeeDocument.findMany({
       where: { employeeId },
       include: {
         employee: true,
-        documentType: true, 
+        documentType: true,
       },
     });
   }
 
-  async findPendingDocuments(filters: ListPendingDocumentsDto): Promise<PaginationResult<EmployeeDocumentWithRelations>> {
-    const { page = 1, limit = 10, employeeId: filterEmployeeId, documentTypeId: filterDocumentTypeId } = filters;
+  async findPendingDocuments(
+    filters: ListPendingDocumentsDto,
+  ): Promise<PaginationResult<EmployeeDocumentWithRelations>> {
+    const {
+      page = 1,
+      limit = 10,
+      employeeId: filterEmployeeId,
+      documentTypeId: filterDocumentTypeId,
+    } = filters;
     const offset = (page - 1) * limit;
 
     const where: Prisma.EmployeeDocumentWhereInput = {
@@ -125,15 +141,17 @@ export class EmployeeDocumentRepository implements IEmployeeDocumentRepository {
     };
   }
 
-  async findByEmployeeIdAndDocumentTypeId(employeeId: string, documentTypeId: string): Promise<EmployeeDocument | null> {
+  async findByEmployeeIdAndDocumentTypeId(
+    employeeId: string,
+    documentTypeId: string,
+  ): Promise<EmployeeDocument | null> {
     return this.prisma.employeeDocument.findUnique({
       where: {
-        employeeId_documentTypeId: { 
+        employeeId_documentTypeId: {
           employeeId,
           documentTypeId,
         },
       },
     });
   }
-
 }

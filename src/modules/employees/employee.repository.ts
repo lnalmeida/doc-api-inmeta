@@ -17,18 +17,20 @@ export class EmployeeRepository implements IEmployeeRepository {
       hiredAt: new Date(data.hiredAt),
     };
     return this.prismaService.employee.create({ data: employeeData });
-  };
+  }
 
-  async findAllEmployees(filters: ListEmployeeDto): Promise<PaginationResult<Employee>> {
+  async findAllEmployees(
+    filters: ListEmployeeDto,
+  ): Promise<PaginationResult<Employee>> {
     const { page = 1, limit = 10, name } = filters;
     const offset = (page - 1) * limit;
 
     const where: Prisma.EmployeeWhereInput = {};
 
-    if(name) { 
+    if (name) {
       where.name = {
         contains: name,
-        // mode: 'insensitive', // Desativado para compatibilidade com SQLite
+        mode: 'insensitive',
       };
     }
 
@@ -51,15 +53,15 @@ export class EmployeeRepository implements IEmployeeRepository {
       total,
       totalPages,
     };
-  };
+  }
 
   async findEmployeeById(id: string): Promise<Employee | null> {
     return this.prismaService.employee.findUnique({ where: { id } });
-  };
+  }
 
   async findEmployeeByCpf(cpf: string): Promise<Employee | null> {
     return this.prismaService.employee.findUnique({ where: { cpf } });
-  };
+  }
 
   async updateEmployee(id: string, data: UpdateEmployeeDto): Promise<Employee> {
     const updateData: any = { ...data };
@@ -70,9 +72,9 @@ export class EmployeeRepository implements IEmployeeRepository {
       where: { id },
       data: updateData,
     });
-  };
+  }
 
   async deleteEmployee(id: string): Promise<void> {
     await this.prismaService.employee.delete({ where: { id } });
-  };
-};
+  }
+}

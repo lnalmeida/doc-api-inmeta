@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from '@prisma/client';
 
 export type EmployeeDocumentWithRelations = Prisma.EmployeeDocumentGetPayload<{
   include: {
@@ -7,8 +7,7 @@ export type EmployeeDocumentWithRelations = Prisma.EmployeeDocumentGetPayload<{
   };
 }>;
 
-export type EmployeeDocumentWithDocumentType = Prisma.EmployeeDocumentGetPayload<{
-  include: { documentType: true };
-}>;
-
-
+export type EmployeeDocumentWithDocumentType =
+  Prisma.EmployeeDocumentGetPayload<{
+    include: { documentType: true };
+  }>;

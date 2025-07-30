@@ -1,12 +1,18 @@
-import { EmployeeDocument } from '../entities/employee-document.entity';
 import { Employee } from '../../employees/entities/employee.entity';
-import {DocumentType} from '../../document-type/entities/document-type.entity';
-import { DocumentDetailDto, EmployeeDocumentStatusDto } from '../dtos/employee-document-status.dto';
+import {
+  DocumentDetailDto,
+  EmployeeDocumentStatusDto,
+} from '../dtos/employee-document-status.dto';
 import { PendingDocumentResponseDto } from '../dtos/pending-document-response.dto';
-import { EmployeeDocumentWithDocumentType, EmployeeDocumentWithRelations } from 'src/common/types/EmployeeDocumentTypes';
+import {
+  EmployeeDocumentWithDocumentType,
+  EmployeeDocumentWithRelations,
+} from 'src/common/types/EmployeeDocumentTypes';
 
 export class EmployeeDocumentMapper {
-  static toDocumentDetailDto(employeeDocument: EmployeeDocumentWithDocumentType): DocumentDetailDto {
+  static toDocumentDetailDto(
+    employeeDocument: EmployeeDocumentWithDocumentType,
+  ): DocumentDetailDto {
     return {
       documentTypeId: employeeDocument.documentTypeId,
       documentTypeName: employeeDocument.documentType.name,
@@ -22,7 +28,9 @@ export class EmployeeDocumentMapper {
     return {
       employeeId: employee.id,
       employeeName: employee.name,
-      documents: employeeDocuments.map(doc => EmployeeDocumentMapper.toDocumentDetailDto(doc)),
+      documents: employeeDocuments.map((doc) =>
+        EmployeeDocumentMapper.toDocumentDetailDto(doc),
+      ),
     };
   }
 
@@ -39,5 +47,5 @@ export class EmployeeDocumentMapper {
       status: employeeDocument.status,
       submittedAt: employeeDocument.submittedAt || null,
     };
-  };
-};
+  }
+}

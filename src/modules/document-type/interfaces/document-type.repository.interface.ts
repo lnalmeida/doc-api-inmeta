@@ -6,11 +6,16 @@ import { PaginationResult } from 'src/common/types/pagination.types';
 
 export interface IDocumentTypeRepository {
   createDocumentType(data: CreateDocumentTypeDto): Promise<DocumentType>;
-  findAllDocumentTypes(filters: ListDocumentTypeDto): Promise<PaginationResult<DocumentType>>;
+  findAllDocumentTypes(
+    filters: ListDocumentTypeDto,
+  ): Promise<PaginationResult<DocumentType>>;
   findDocumentTypeById(id: string): Promise<DocumentType | null>;
   findDocumentTypeByName(name: string): Promise<DocumentType | null>;
-  updateDocumentType(id: string, data: UpdateDocumentTypeDto): Promise<DocumentType>;
+  updateDocumentType(
+    id: string,
+    data: UpdateDocumentTypeDto,
+  ): Promise<DocumentType>;
   deleteDocumentType(id: string): Promise<void>;
 }
 
-export const DOCUMENT_TYPE_REPOSITORY = 'DOCUMENT_TYPE_REPOSITORY'; 
+export const DOCUMENT_TYPE_REPOSITORY = 'DOCUMENT_TYPE_REPOSITORY';

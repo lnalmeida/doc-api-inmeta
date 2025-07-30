@@ -1,0 +1,40 @@
+
+services:
+    #serviços pra api
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: doc-api-inmeta
+        ports:
+          - 3000:3000
+        environment:
+            NODE_ENV: dev
+            DATABASE_URL: postgresql://postgres:password@db:5432/doc-api-inmeta-db
+            DATABASE_PROVIDER: postgresql
+            THROTTLER_TTL: 60000
+            THROTTLER_LIMIT: 10
+        depends_on:
+            db:
+                condition: service_started
+            
+        volumes:
+            - .:/app
+            - /app/node_modules
+        command: npm run start:dev
+
+    #serviço do Postgres
+    db:
+        image: postgres:16-alpine
+        container_name: doc-db-inmeta
+        ports:
+          - 5432:5432
+        environment:
+            USERPOSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: doc-api-inmeta-db
+        volumes:
+          - db_data:/var/lib/postgresql/data
+
+volumes:
+    db_data:

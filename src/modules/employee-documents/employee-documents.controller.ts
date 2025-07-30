@@ -16,7 +16,7 @@ import { UnassignDocumentTypesDto } from './dtos/unassign-document-types.dto';
 import { SubmitDocumentDto } from './dtos/submit-document.dto';
 import { EmployeeDocumentStatusDto } from './dtos/employee-document-status.dto';
 import { ListPendingDocumentsDto } from './dtos/list-pending-documents.dto';
-import { PaginationGroupedPendingDocumentResult, PaginationResult } from '../../common/types/pagination.types';
+import { PaginationGroupedPendingDocumentResult } from '../../common/types/pagination.types';
 import { PendingDocumentResponseDto } from './dtos/pending-document-response.dto';
 import {
   ApiTags,
@@ -28,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('employee-documents')
-@Controller('employee-documents') 
+@Controller('employee-documents')
 export class EmployeeDocumentsController {
   constructor(
     private readonly employeeDocumentsService: EmployeeDocumentsService,
@@ -38,7 +38,8 @@ export class EmployeeDocumentsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Vincula tipos de documentos a um colaborador',
-    description: 'Associa um ou mais tipos de documentos a um colaborador, marcando-os como PENDENTE.',
+    description:
+      'Associa um ou mais tipos de documentos a um colaborador, marcando-os como PENDENTE.',
   })
   @ApiBody({ type: AssignDocumentTypesDto })
   @ApiResponse({
@@ -51,10 +52,14 @@ export class EmployeeDocumentsController {
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
-    description: 'Dados de entrada inválidos ou IDs de tipo de documento inexistentes.',
+    description:
+      'Dados de entrada inválidos ou IDs de tipo de documento inexistentes.',
   })
-  async assignDocumentTypes(@Body() data: AssignDocumentTypesDto): Promise<any> {
-    const assignedDocs = await this.employeeDocumentsService.assignDocumentTypes(data);
+  async assignDocumentTypes(
+    @Body() data: AssignDocumentTypesDto,
+  ): Promise<any> {
+    const assignedDocs =
+      await this.employeeDocumentsService.assignDocumentTypes(data);
     return {
       message: 'Tipos de documentos vinculados com sucesso.',
       assignedDocumentsCount: assignedDocs.length,
@@ -65,7 +70,8 @@ export class EmployeeDocumentsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Desvincula tipos de documentos de um colaborador',
-    description: 'Remove a associação de um ou mais tipos de documentos de um colaborador.',
+    description:
+      'Remove a associação de um ou mais tipos de documentos de um colaborador.',
   })
   @ApiBody({ type: UnassignDocumentTypesDto })
   @ApiResponse({
@@ -80,10 +86,11 @@ export class EmployeeDocumentsController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Dados de entrada inválidos.',
   })
-  async unassignDocumentTypes(@Body() data: UnassignDocumentTypesDto): Promise<void> {
+  async unassignDocumentTypes(
+    @Body() data: UnassignDocumentTypesDto,
+  ): Promise<void> {
     await this.employeeDocumentsService.unassignDocumentTypes(data);
   }
-
 
   @Patch('submit')
   @HttpCode(HttpStatus.OK)
@@ -95,7 +102,7 @@ export class EmployeeDocumentsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Documento submetido com sucesso.',
-    type: PendingDocumentResponseDto, 
+    type: PendingDocumentResponseDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
@@ -111,15 +118,16 @@ export class EmployeeDocumentsController {
   })
   async submitDocument(@Body() data: SubmitDocumentDto): Promise<any> {
     const updatedDoc = await this.employeeDocumentsService.submitDocument(data);
-    
-    return updatedDoc; 
+
+    return updatedDoc;
   }
 
   @Get('status/:employeeId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Obtém o status de documentação de um colaborador específico',
-    description: 'Retorna a lista de documentos vinculados a um colaborador, indicando quais estão PENDENTES e quais foram ENVIADOS.',
+    description:
+      'Retorna a lista de documentos vinculados a um colaborador, indicando quais estão PENDENTES e quais foram ENVIADOS.',
   })
   @ApiParam({
     name: 'employeeId',
@@ -145,7 +153,8 @@ export class EmployeeDocumentsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Lista todos os documentos pendentes de todos os colaboradores',
-    description: 'Retorna uma lista paginada de todos os documentos que ainda estão PENDENTES de envio, com filtros opcionais por colaborador e tipo de documento.',
+    description:
+      'Retorna uma lista paginada de todos os documentos que ainda estão PENDENTES de envio, com filtros opcionais por colaborador e tipo de documento.',
   })
   @ApiQuery({
     name: 'page',
@@ -174,12 +183,14 @@ export class EmployeeDocumentsController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Lista paginada de documentos pendentes.',
-    type: () => PendingDocumentResponseDto, 
+    type: () => PendingDocumentResponseDto,
     isArray: true,
   })
   async listPendingDocuments(
     @Query() filters: ListPendingDocumentsDto,
-  ): Promise<PaginationGroupedPendingDocumentResult<EmployeeDocumentStatusDto>> {
+  ): Promise<
+    PaginationGroupedPendingDocumentResult<EmployeeDocumentStatusDto>
+  > {
     return this.employeeDocumentsService.listPendingDocuments(filters);
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsString, IsUUID } from 'class-validator';
 
 export class SubmitDocumentDto {
   @ApiProperty({
@@ -15,6 +15,8 @@ export class SubmitDocumentDto {
     example: 'uuid-do-cpf',
   })
   @IsString({ message: 'O ID do tipo de documento deve ser uma string.' })
-  @IsUUID('4', { message: 'O ID do tipo de documento deve ser um UUID válido.' })
+  @IsUUID('4', {
+    message: 'O ID do tipo de documento deve ser um UUID válido.',
+  })
   documentTypeId: string;
-};
+}

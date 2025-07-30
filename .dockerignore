@@ -1,0 +1,19 @@
+import { stopCoverage } from "v8"
+
+node_nodules
+dist
+.env
+.env.test
+.vscode
+.git
+.gitignore
+npm-debug.log
+yarno-debug.log
+yarn-error.log
+coverage
+*.log
+
+test/
+
+src/**/*.spec.ts
+src/**/*.test.ts

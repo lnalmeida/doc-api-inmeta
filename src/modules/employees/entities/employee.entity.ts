@@ -3,4 +3,4 @@ export class Employee {
   name: string;
   cpf: string;
   hiredAt: Date;
-};
+}

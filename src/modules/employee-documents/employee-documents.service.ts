@@ -26,11 +26,13 @@ import {
   Employee,
   DocumentType,
 } from '@prisma/client';
-import { DocumentDetailDto, EmployeeDocumentStatusDto } from './dtos/employee-document-status.dto';
+import {
+  DocumentDetailDto,
+  EmployeeDocumentStatusDto,
+} from './dtos/employee-document-status.dto';
 import { EmployeeDocumentMapper } from './utils/employee-document.mapper';
 import { ListPendingDocumentsDto } from './dtos/list-pending-documents.dto';
-import { PaginationGroupedPendingDocumentResult, PaginationResult } from '../../common/types/pagination.types';
-import { PendingDocumentResponseDto } from './dtos/pending-document-response.dto';
+import { PaginationGroupedPendingDocumentResult } from '../../common/types/pagination.types';
 import { EmployeeDocumentWithRelations } from 'src/common/types/EmployeeDocumentTypes';
 
 @Injectable()
@@ -57,9 +59,8 @@ export class EmployeeDocumentsService {
     }
 
     const foundDocumentTypes =
-      await this.documentTypeRepository
-        .findAllDocumentTypes({}); 
-    
+      await this.documentTypeRepository.findAllDocumentTypes({});
+
     const existingDocumentTypeIds = new Set(
       foundDocumentTypes.data.map((dt: any) => dt.id),
     );
@@ -77,16 +78,17 @@ export class EmployeeDocumentsService {
     }
 
     await this.verifyDuplicateDocumentAssignments(
-        employeeId,
-        documentTypeIds,
-        employee,
-        foundDocumentTypes.data
+      employeeId,
+      documentTypeIds,
+      employee,
+      foundDocumentTypes.data,
     );
-    
-    const documentsToCreate = documentTypeIds.filter(id =>
-        !foundDocumentTypes.data 
-            .filter(dt => dt.id === id)
-            .some(dt => existingDocumentTypeIds.has(dt.id)) 
+
+    const documentsToCreate = documentTypeIds.filter(
+      (id) =>
+        !foundDocumentTypes.data
+          .filter((dt) => dt.id === id)
+          .some((dt) => existingDocumentTypeIds.has(dt.id)),
     );
 
     return this.employeeDocumentRepository.assignDocumentTypes(
@@ -95,9 +97,7 @@ export class EmployeeDocumentsService {
     );
   }
 
-  async unassignDocumentTypes(
-    data: UnassignDocumentTypesDto,
-  ): Promise<void> {
+  async unassignDocumentTypes(data: UnassignDocumentTypesDto): Promise<void> {
     const { employeeId, documentTypeIds } = data;
 
     const employee = await this.employeeRepository.findEmployeeById(employeeId);
@@ -123,9 +123,8 @@ export class EmployeeDocumentsService {
       );
     }
 
-    const documentType = await this.documentTypeRepository.findDocumentTypeById(
-      documentTypeId,
-    );
+    const documentType =
+      await this.documentTypeRepository.findDocumentTypeById(documentTypeId);
     if (!documentType) {
       throw new NotFoundException(
         `Tipo de documento com ID "${documentTypeId}" não encontrado.`,
@@ -157,7 +156,9 @@ export class EmployeeDocumentsService {
     );
   }
 
-  async getEmployeeDocumentStatus(employeeId: string): Promise<EmployeeDocumentStatusDto> {
+  async getEmployeeDocumentStatus(
+    employeeId: string,
+  ): Promise<EmployeeDocumentStatusDto> {
     const employee = await this.employeeRepository.findEmployeeById(employeeId);
     if (!employee) {
       throw new NotFoundException(
@@ -178,11 +179,11 @@ export class EmployeeDocumentsService {
 
   async listPendingDocuments(
     filters: ListPendingDocumentsDto,
-  ): Promise<PaginationGroupedPendingDocumentResult<EmployeeDocumentStatusDto>> {
-   
-    const result = await this.employeeDocumentRepository.findPendingDocuments(
-      filters
-    );
+  ): Promise<
+    PaginationGroupedPendingDocumentResult<EmployeeDocumentStatusDto>
+  > {
+    const result =
+      await this.employeeDocumentRepository.findPendingDocuments(filters);
 
     const totalPendingDocuments = result.data.length;
 
@@ -201,37 +202,42 @@ export class EmployeeDocumentsService {
       totalPendingDocuments,
       page,
       limit,
-      totalPages: totalPagesGrouped
+      totalPages: totalPagesGrouped,
     };
   }
 
   private async verifyDuplicateDocumentAssignments(
-      employeeId: string,
-      documentTypeIds: string[],
-      employee: Employee,
-      allDocumentTypesInSystem: DocumentType[], 
-    ): Promise<void> {
-      const currentlyAssignedDocuments = await this.employeeDocumentRepository.findEmployeeDocumentsByEmployeeId(employeeId);
-      const currentlyAssignedDocumentTypeIds = new Set(
-        currentlyAssignedDocuments.map(doc => doc.documentTypeId)
+    employeeId: string,
+    documentTypeIds: string[],
+    employee: Employee,
+    allDocumentTypesInSystem: DocumentType[],
+  ): Promise<void> {
+    const currentlyAssignedDocuments =
+      await this.employeeDocumentRepository.findEmployeeDocumentsByEmployeeId(
+        employeeId,
       );
+    const currentlyAssignedDocumentTypeIds = new Set(
+      currentlyAssignedDocuments.map((doc) => doc.documentTypeId),
+    );
 
-      const alreadyAssignedDocumentTypes = documentTypeIds.filter(id => currentlyAssignedDocumentTypeIds.has(id));
+    const alreadyAssignedDocumentTypes = documentTypeIds.filter((id) =>
+      currentlyAssignedDocumentTypeIds.has(id),
+    );
 
-      if (alreadyAssignedDocumentTypes.length > 0) {
-        const alreadyAssignedNames = allDocumentTypesInSystem
-          .filter(dt => alreadyAssignedDocumentTypes.includes(dt.id))
-          .map(dt => dt.name);
+    if (alreadyAssignedDocumentTypes.length > 0) {
+      const alreadyAssignedNames = allDocumentTypesInSystem
+        .filter((dt) => alreadyAssignedDocumentTypes.includes(dt.id))
+        .map((dt) => dt.name);
 
-        throw new ConflictException(
-          `O(s) tipo(s) de documento "${alreadyAssignedNames.join(', ')}" já está(ão) vinculado(s) ao colaborador ${employee.name}.`,
-        );
-      }
+      throw new ConflictException(
+        `O(s) tipo(s) de documento "${alreadyAssignedNames.join(', ')}" já está(ão) vinculado(s) ao colaborador ${employee.name}.`,
+      );
     }
+  }
 
-   private groupDocumentsByEmployee(
-    documents: EmployeeDocumentWithRelations[]
-    ): EmployeeDocumentStatusDto[] {
+  private groupDocumentsByEmployee(
+    documents: EmployeeDocumentWithRelations[],
+  ): EmployeeDocumentStatusDto[] {
     const groupedDocumentsMap = new Map<string, EmployeeDocumentStatusDto>();
 
     for (const doc of documents) {
@@ -244,7 +250,7 @@ export class EmployeeDocumentsService {
           documents: [],
         });
       }
-      
+
       const documentDetail: DocumentDetailDto = {
         documentTypeId: doc.documentType.id,
         documentTypeName: doc.documentType.name,
@@ -257,5 +263,4 @@ export class EmployeeDocumentsService {
 
     return Array.from(groupedDocumentsMap.values());
   }
-
-};
+}

@@ -12,7 +12,7 @@ export class ListPendingDocumentsDto extends PaginationParamsDto {
   @IsOptional()
   @IsString({ message: 'O ID do colaborador deve ser uma string.' })
   @IsUUID('4', { message: 'O ID do colaborador deve ser um UUID válido.' })
-  @Transform(({ value }) => value === '' ? undefined : value )
+  @Transform(({ value }) => (value === '' ? undefined : value))
   employeeId?: string;
 
   @ApiProperty({
@@ -22,7 +22,9 @@ export class ListPendingDocumentsDto extends PaginationParamsDto {
   })
   @IsOptional()
   @IsString({ message: 'O ID do tipo de documento deve ser uma string.' })
-  @IsUUID('4', { message: 'O ID do tipo de documento deve ser um UUID válido.' })
-  @Transform(({ value }) => value === '' ? undefined : value )
+  @IsUUID('4', {
+    message: 'O ID do tipo de documento deve ser um UUID válido.',
+  })
+  @Transform(({ value }) => (value === '' ? undefined : value))
   documentTypeId?: string;
 }

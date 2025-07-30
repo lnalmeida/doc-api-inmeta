@@ -13,7 +13,8 @@ export class CreateEmployeeDto {
   name: string;
 
   @ApiProperty({
-    description: 'CPF do colaborador (formato "000.000.000-00" ou "00000000000")',
+    description:
+      'CPF do colaborador (formato "000.000.000-00" ou "00000000000")',
     example: '123.456.789-00',
   })
   @IsString({ message: 'O CPF deve ser uma string.' })
@@ -22,9 +23,16 @@ export class CreateEmployeeDto {
   cpf: string;
 
   @ApiProperty({
-    description: 'Data de contratação do colaborador (formato ISO 8601: YYYY-MM-DD)',
+    description:
+      'Data de contratação do colaborador (formato ISO 8601: YYYY-MM-DD)',
     example: '2023-01-15',
   })
-  @IsDateString({}, { message: 'A data de contratação deve ser uma data válida no formato ISO 8601.' })
-  hiredAt: string; 
+  @IsDateString(
+    {},
+    {
+      message:
+        'A data de contratação deve ser uma data válida no formato ISO 8601.',
+    },
+  )
+  hiredAt: string;
 }

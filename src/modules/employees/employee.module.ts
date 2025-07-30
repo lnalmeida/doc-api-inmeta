@@ -13,6 +13,6 @@ import { EMPLOYEE_REPOSITORY } from './interfaces/employee.repository.interface'
       useClass: EmployeeRepository,
     },
   ],
-  exports: [EmployeeService, EMPLOYEE_REPOSITORY], 
+  exports: [EmployeeService, EMPLOYEE_REPOSITORY],
 })
 export class EmployeeModule {}

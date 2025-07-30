@@ -16,16 +16,18 @@ export class DocumentTypeRepository implements IDocumentTypeRepository {
     return this.prismaService.documentType.create({ data });
   }
 
-  async findAllDocumentTypes(filters: ListDocumentTypeDto): Promise<PaginationResult<DocumentType>> {
-    const {page = 1, limit = 10, name} = filters;
+  async findAllDocumentTypes(
+    filters: ListDocumentTypeDto,
+  ): Promise<PaginationResult<DocumentType>> {
+    const { page = 1, limit = 10, name } = filters;
     const offset = (page - 1) * limit;
 
     const where: Prisma.DocumentTypeWhereInput = {};
 
-    if(name) {
+    if (name) {
       where.name = {
         contains: name,
-        // mode: 'insensitive', //removido provisóruiamente, para compatibilidade com SQLite
+        mode: 'insensitive',
       };
     }
 
@@ -58,7 +60,10 @@ export class DocumentTypeRepository implements IDocumentTypeRepository {
     return this.prismaService.documentType.findUnique({ where: { name } });
   }
 
-  async updateDocumentType(id: string, data: UpdateDocumentTypeDto): Promise<DocumentType> {
+  async updateDocumentType(
+    id: string,
+    data: UpdateDocumentTypeDto,
+  ): Promise<DocumentType> {
     return this.prismaService.documentType.update({
       where: { id },
       data,
@@ -68,4 +73,4 @@ export class DocumentTypeRepository implements IDocumentTypeRepository {
   async deleteDocumentType(id: string): Promise<void> {
     await this.prismaService.documentType.delete({ where: { id } });
   }
-};
+}
