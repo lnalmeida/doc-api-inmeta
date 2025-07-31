@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   Inject,
   Injectable,
@@ -62,6 +63,7 @@ export class EmployeeDocumentsService {
       await this.documentTypeRepository.findAllDocumentTypes({});
 
     const existingDocumentTypeIds = new Set(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       foundDocumentTypes.data.map((dt: any) => dt.id),
     );
 
@@ -84,6 +86,7 @@ export class EmployeeDocumentsService {
       foundDocumentTypes.data,
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const documentsToCreate = documentTypeIds.filter(
       (id) =>
         !foundDocumentTypes.data

@@ -1,98 +1,200 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# API de Gerenciamento de Documentação de Colaboradores
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📝 Descrição do Projeto
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Esta API RESTful foi desenvolvida com o objetivo de gerenciar o fluxo de documentação obrigatória de colaboradores. Ela permite o cadastro e a atualização de informações de colaboradores e tipos de documentos, bem como a vinculação/desvinculação desses documentos a cada colaborador. O sistema acompanha o status de envio dos documentos, indicando o que está pendente e o que já foi entregue, facilitando a gestão e conformidade da documentação.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Tecnologias Utilizadas
 
-## Project setup
+A aplicação foi construída utilizando um stack moderno e robusto, focado em performance, escalabilidade e manutenibilidade:
 
-```bash
-$ npm install
-```
+* **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
+* **Framework:** [NestJS](https://nestjs.com/) (Framework Node.js progressivo para construir aplicações server-side eficientes e escaláveis)
+* **ORM:** [Prisma ORM](https://www.prisma.io/) (Next-generation ORM para Node.js e TypeScript, com tipagem forte e migrações declarativas)
+* **Banco de Dados:** [PostgreSQL](https://www.postgresql.org/) (Utilizado em ambiente de desenvolvimento local via Docker Compose)
+* **Validação:** [Class-validator](https://github.com/typestack/class-validator) & [Class-transformer](https://github.com/typestack/class-transformer)
+* **Documentação da API:** [Swagger (OpenAPI)](https://swagger.io/)
+* **Testes:** [Jest](https://jestjs.io/) (Framework de testes unitários e de integração) & [Supertest](https://github.com/visionmedia/supertest) (para testes HTTP de integração de Controller/Service)
+* **Containerização:** [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/) (Para ambiente de desenvolvimento local isolado e preparação para deploy)
+* **Controle de Acesso:** [Throttler](https://github.com/nestjs/throttler) (Rate Limiting para proteção da API)
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## ✨ Funcionalidades
 
-# watch mode
-$ npm run start:dev
+A API oferece as seguintes funcionalidades essenciais para o gerenciamento de documentação de colaboradores:
 
-# production mode
-$ npm run start:prod
-```
+* **Cadastro de Colaborador:** Registro de novos colaboradores com informações básicas (nome, CPF, data de contratação).
+* **Atualização de Colaborador:** Modificação das informações de colaboradores existentes.
+* **Cadastro de Tipo de Documento:** Definição de diferentes categorias de documentos (ex: CPF, RG, Carteira de Trabalho).
+* **Vinculação e Desvinculação de Documentos:**
+    * Associação de um ou mais tipos de documentos a um colaborador específico.
+    * Remoção de associações de documentos de um colaborador.
+    * Validação para impedir a vinculação de documentos já atribuídos.
+* **Envio de Documentos:**
+    * Registro do envio de um documento específico por um colaborador.
+    * A "representação" do documento é suficiente, sem a necessidade de upload de arquivos ou metadados de arquivo (conforme especificação). O status interno do documento é atualizado.
+* **Status da Documentação por Colaborador:** Consulta detalhada de todos os documentos vinculados a um colaborador, indicando quais foram enviados e quais ainda estão pendentes.
+* **Listagem de Documentos Pendentes:**
+    * Listagem paginada de todos os documentos que estão pendentes de envio.
+    * Resultados agrupados por colaborador para melhor visualização.
+    * Filtros opcionais por colaborador e por tipo de documento.
+* **Rate Limiting:** Controle de taxa de requisições para proteger a API contra uso excessivo ou malicioso.
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## 🏗️ Arquitetura do Projeto
 
-# e2e tests
-$ npm run test:e2e
+O projeto segue uma arquitetura baseada em módulos e camadas, inspirada nos princípios da Arquitetura Limpa, promovendo a separação de responsabilidades e a manutenibilidade.
 
-# test coverage
-$ npm run test:cov
-```
+![Estrutura de Pastas do Projeto](URL_DA_SUA_IMAGEM_AQUI)
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📊 Relatório Técnico: Escolhas e Padrões de Design
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Este projeto foi desenvolvido com atenção a princípios de design de software e boas práticas, visando criar uma aplicação eficiente, robusta e fácil de manter.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+### Princípios SOLID
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+A arquitetura do projeto foi guiada pelos princípios SOLID para promover um código mais robusto, flexível e fácil de manter:
 
-## Resources
+* **Single Responsibility Principle (SRP):** Cada classe ou módulo possui uma única responsabilidade bem definida. Por exemplo, os Controllers lidam com requisições HTTP, os Services com a lógica de negócio, e os Repositories com o acesso a dados.
+* **Open/Closed Principle (OCP):** Entidades de software (classes, módulos, funções, etc.) devem ser abertas para extensão, mas fechadas para modificação. Isso é facilitado pela injeção de dependência do NestJS e pelo uso de interfaces.
+* **Dependency Inversion Principle (DIP):** Módulos de alto nível não dependem de módulos de baixo nível, mas sim de abstrações. Isso é evidente no uso de interfaces de repositório (`IEmployeeRepository`, `IDocumentTypeRepository`, `IEmployeeDocumentRepository`), permitindo que os serviços dependam dessas interfaces, e não de implementações concretas (como o `PrismaService`).
 
-Check out a few resources that may come in handy when working with NestJS:
+### Padrão Repository
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+O **Padrão Repository** foi implementado para abstrair a camada de acesso a dados. Os serviços interagem com o banco de dados através de interfaces de repositório, que são então implementadas por classes específicas (ex: `EmployeeRepository` usando Prisma).
+* **Benefício:** Isso desacopla a lógica de negócio do serviço da tecnologia de banco de dados e do ORM, facilitando a troca do ORM ou do banco de dados no futuro, e simplificando os testes unitários dos serviços.
 
-## Support
+### Gerenciamento de Ambientes e Configuração
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+* **Variáveis de Ambiente (`.env`):** Todas as configurações sensíveis e específicas de ambiente (URLs de banco de dados, portas, etc.) são gerenciadas via variáveis de ambiente, carregadas pelo `@nestjs/config`.
+* **Configuração Dinâmica:** O `src/config/database.config.ts` é responsável por definir a URL do banco de dados baseada no `NODE_ENV`. O `schema.prisma` utiliza `env("DATABASE_URL")` e possui o `provider = "postgresql"` fixo, adequado para o ambiente de desenvolvimento local com PostgreSQL via Docker.
 
-## Stay in touch
+### Tratamento de Erros
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Um **Filtro de Exceção Global (`AllExceptionsFilter`)** foi implementado para padronizar as respostas de erro da API.
+* **Benefício:** Garante que todas as exceções (sejam elas `HttpException` do NestJS, erros específicos do Prisma como violações de chave estrangeira/unicidade, ou erros genéricos) sejam capturadas e retornem um formato JSON consistente, com `statusCode`, `message`, `error` e `path`, facilitando o consumo da API.
+* **Observação:** Por se tratar de um desafio técnico feito em tempo livre, não foi implementado um sistema de exceções personalizadas de negócio, utilizando-se as exceções padrão do NestJS com mensagens claras. O foco foi na robustez do handler global.
 
-## License
+### Testes Automatizados
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Uma robusta estratégia de testes automatizados foi implementada para garantir a qualidade e a confiabilidade da aplicação:
+
+* **Testes Unitários:** Focados na **lógica de negócio dos serviços**, testando-os isoladamente através do mocking dos repositórios. Isso garante a correção da lógica central e a rápida identificação de bugs.
+* **Testes de Integração:** Realizados a nível de **Controller-Service**, onde o controlador e o serviço são testados em conjunto, enquanto as dependências de repositório são mockadas. Isso valida a comunicação entre essas camadas e a formatação das respostas da API, sem interagir com o banco de dados real. Todos os testes estão passando.
+
+### Containerização com Docker
+
+A aplicação foi containerizada usando Docker para garantir portabilidade e consistência entre ambientes de desenvolvimento.
+
+* **`Dockerfile`:** Define o processo de construção da imagem Docker da aplicação, utilizando um `multi-stage build` para criar imagens leves e otimizadas para produção.
+* **`docker-compose.yml`:** Orquestra o ambiente de desenvolvimento local, levantando a API, o banco de dados PostgreSQL e o Redis em contêineres, facilitando a configuração e o gerenciamento de dependências.
+
+---
+
+## ⚙️ Instalação e Execução (Desenvolvimento Local)
+
+Para configurar e rodar a API localmente utilizando Docker Compose:
+
+### Pré-requisitos
+
+* [Node.js](https://nodejs.org/en/) (v20.x ou superior)
+* [npm](https://www.npmjs.com/) (ou Yarn)
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) (ou Docker Engine/Podman)
+
+### Passos
+
+1.  **Clone o Repositório:**
+    ```bash
+    git clone [URL_DO_SEU_REPOSITORIO]
+    cd doc-api-inmeta
+    ```
+
+2.  **Instale as Dependências do Projeto:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configurações do Ambiente (`.env`):**
+    Crie um arquivo `.env` na raiz do projeto (no mesmo nível de `package.json`) e configure as variáveis de ambiente necessárias para o desenvolvimento local com Docker Compose.
+
+    ```env
+    # .env
+    NODE_ENV=development
+
+    # Configuração do Banco de Dados PostgreSQL (serviço 'db' no Docker Compose)
+    DATABASE_URL="postgresql://user:password@db:5432/doc_api_db_local"
+    DATABASE_PROVIDER="postgresql"
+
+    # Configurações do Redis (serviço 'redis_cache' no Docker Compose)
+    REDIS_HOST=redis_cache
+    REDIS_PORT=6379
+    REDIS_PASSWORD="password" # Use a senha que você definiu no docker-compose.yml
+    REDIS_TTL=3600000 # TTL padrão do cache em milissegundos (1 hora)
+
+    # Configurações do Throttler (Rate Limit)
+    THROTTLER_TTL=60000 # 60 segundos
+    THROTTLER_LIMIT=10  # 10 requisições
+    ```
+    **Importante:** As credenciais (`user`, `password`, `doc_api_db_local`) para o `DATABASE_URL` no `.env` devem ser as mesmas definidas para o serviço `db` no `docker-compose.yml`. A senha do `REDIS_PASSWORD` também deve ser a mesma.
+
+4.  **Levantar o Ambiente Docker Compose:**
+    Este comando irá construir a imagem da sua API, e levantar os contêineres do PostgreSQL, Redis e da sua API.
+
+    ```bash
+    docker compose up --build -d
+    ```
+
+5.  **Aplicar Migrações no Banco de Dados Local:**
+    Com o banco de dados PostgreSQL (`db`) rodando no Docker, aplique o esquema da sua API.
+
+    ```bash
+    docker compose exec api npx prisma migrate deploy
+    ```
+    * Este comando executa o `npx prisma migrate deploy` dentro do contêiner da sua API, que por sua vez se conecta ao contêiner `db` (PostgreSQL) e cria as tabelas definidas no seu `schema.prisma`.
+
+6.  **Acessar a Aplicação:**
+    Sua API estará agora acessível em:
+    `http://localhost:3000`
+
+---
+
+## 📚 Endpoints da API (Swagger)
+
+A documentação interativa da API está disponível via Swagger UI.
+
+Após iniciar a aplicação (passo 6 da instalação), acesse a seguinte URL no seu navegador:
+
+`http://localhost:3000/api-docs`
+
+Você poderá explorar todos os endpoints disponíveis, seus modelos de dados, e realizar requisições de teste diretamente da interface do Swagger.
+
+---
+
+## ✅ Executando Testes Automatizados
+
+Para rodar os testes unitários e de integração:
+
+1.  **Certifique-se de que o ambiente Docker Compose NÃO está rodando.** Se estiver, derrube-o com `docker compose down`.
+2.  **Execute os Testes:**
+    ```bash
+    npm test
+    ```
+    * Este comando executará todos os testes unitários (focados na lógica de negócio dos serviços) e os testes de integração (focados na comunicação entre controladores e serviços, mockando repositórios).
+
+---
+
+## ⏭️ Próximos Passos (Melhorias Futuras)
+
+* **Melhoria no Tratamento de Exceções:** Implementar exceções personalizadas de negócio para tornar o código mais expressivo e facilitar o tratamento de erros específicos de domínio.
+* **Estratégia de Cache:** Adicionar uma estratégia de cache em endpoints de leitura frequente para otimizar o desempenho e reduzir a carga no banco de dados.
+* **Segurança Abrangente:** Melhorar a segurança da API com autenticação (ex: JWT) e autorização baseada em papéis.
+* **Deploy em Nuvem:** Configurar pipelines de CI/CD para deploy automatizado em plataformas de nuvem (ex: Google Cloud Run, AWS ECS).
+* **Logging Estruturado:** Utilizar uma solução de logging mais robusta (ex: Pino, Winston) e enviar logs para um sistema centralizado.
+
+---
