@@ -95,6 +95,14 @@ A aplicação foi containerizada usando Docker para garantir portabilidade e con
 * **`Dockerfile`:** Define o processo de construção da imagem Docker da aplicação, utilizando um `multi-stage build` para criar imagens leves e otimizadas para produção.
 * **`docker-compose.yml`:** Orquestra o ambiente de desenvolvimento local, levantando a API, o banco de dados PostgreSQL e o Redis em contêineres, facilitando a configuração e o gerenciamento de dependências.
 
+### Deploy
+
+Uma vez que a aplicação já esta rodando em um container, a forma mais simples de colocá-la no ar seria usando algum serviço de Containers, como o Azure Container Apps usando o Azure Devops, que simplifica bem o processo e é bem intuitivo, sabendo porém que o container pode ser usado em qualquer outra Cloud. 
+
+* **`Dockerfile`:** Define o processo de construção da imagem Docker da aplicação, utilizando um `multi-stage build` para criar imagens leves e otimizadas para produção.
+* **`docker-compose.yml`:** Orquestra o ambiente de desenvolvimento local, levantando a API, o banco de dados PostgreSQL e o Redis em contêineres, facilitando a configuração e o gerenciamento de dependências.
+
+
 ---
 
 ## ⚙️ Instalação e Execução (Desenvolvimento Local)
