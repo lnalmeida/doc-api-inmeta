@@ -49,7 +49,7 @@ A API oferece as seguintes funcionalidades essenciais para o gerenciamento de do
 
 O projeto segue uma arquitetura baseada em módulos e camadas, inspirada nos princípios da Arquitetura Limpa, promovendo a separação de responsabilidades e a manutenibilidade.
 
-![Estrutura de Pastas do Projeto](URL_DA_SUA_IMAGEM_AQUI)
+![Estrutura de Pastas do Projeto](./assets//docs/estrutura-de-pasta-api-inmeta.png)
 
 ---
 
