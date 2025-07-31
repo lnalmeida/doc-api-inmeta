@@ -1,4 +1,3 @@
-
 import { TestingModule, Test } from '@nestjs/testing';
 import { Employee } from '@prisma/client';
 import { cpf } from 'cpf-cnpj-validator';
@@ -9,19 +8,30 @@ import { CreateEmployeeDto } from 'src/modules/employees/dtos/create-employee.dt
 import { EmployeeResponseDto } from 'src/modules/employees/dtos/employee-response.dto';
 import { ListEmployeeDto } from 'src/modules/employees/dtos/list-employee.dto';
 import { UpdateEmployeeDto } from 'src/modules/employees/dtos/update-employee.dto';
-import { IEmployeeRepository, EMPLOYEE_REPOSITORY } from 'src/modules/employees/interfaces/employee.repository.interface';
+import {
+  IEmployeeRepository,
+  EMPLOYEE_REPOSITORY,
+} from 'src/modules/employees/interfaces/employee.repository.interface';
 import { config } from 'dotenv';
 
 config({ path: '.env.test', override: true });
 
 // Mocks de dados
-const mockEmployee1: Employee = { 
-  id: 'employee-id-1', name: 'Ana Silva', cpf: cpf.generate(), hiredAt: new Date('2023-01-01'), 
-  createdAt: new Date(), updatedAt: new Date() 
+const mockEmployee1: Employee = {
+  id: 'employee-id-1',
+  name: 'Ana Silva',
+  cpf: cpf.generate(),
+  hiredAt: new Date('2023-01-01'),
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
-const mockEmployee2: Employee = { 
-  id: 'employee-id-2', name: 'Pedro Souza', cpf: cpf.generate(), hiredAt: new Date('2023-02-01'), 
-  createdAt: new Date(), updatedAt: new Date() 
+const mockEmployee2: Employee = {
+  id: 'employee-id-2',
+  name: 'Pedro Souza',
+  cpf: cpf.generate(),
+  hiredAt: new Date('2023-02-01'),
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
 
 describe('EmployeesController (Integration)', () => {
@@ -62,8 +72,17 @@ describe('EmployeesController (Integration)', () => {
 
   describe('POST /employee', () => {
     it('deve chamar o serviço para criar e retornar o colaborador', async () => {
-      const createDto: CreateEmployeeDto = { name: 'Novo Colaborador', cpf: cpf.generate(), hiredAt: '2024-03-01' };
-      const createdEmployee: Employee = { ...mockEmployee1, id: 'new-id', name: createDto.name, cpf: createDto.cpf };
+      const createDto: CreateEmployeeDto = {
+        name: 'Novo Colaborador',
+        cpf: cpf.generate(),
+        hiredAt: '2024-03-01',
+      };
+      const createdEmployee: Employee = {
+        ...mockEmployee1,
+        id: 'new-id',
+        name: createDto.name,
+        cpf: createDto.cpf,
+      };
       jest.spyOn(service, 'create').mockResolvedValue(createdEmployee);
 
       const result = await controller.create(createDto);
@@ -77,7 +96,11 @@ describe('EmployeesController (Integration)', () => {
     it('deve chamar o serviço para listar colaboradores com paginação', async () => {
       const filters: ListEmployeeDto = { page: 1, limit: 10 };
       const serviceResult: PaginationResult<Employee> = {
-        data: [mockEmployee1, mockEmployee2], total: 2, page: 1, limit: 10, totalPages: 1
+        data: [mockEmployee1, mockEmployee2],
+        total: 2,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
       };
       jest.spyOn(service, 'findAll').mockResolvedValue(serviceResult);
 
@@ -103,7 +126,10 @@ describe('EmployeesController (Integration)', () => {
   describe('PATCH /employee/:id', () => {
     it('deve chamar o serviço para atualizar um colaborador', async () => {
       const updateDto: UpdateEmployeeDto = { name: 'Updated Employee' };
-      const updatedEmployee: Employee = { ...mockEmployee1, name: 'Updated Employee' };
+      const updatedEmployee: Employee = {
+        ...mockEmployee1,
+        name: 'Updated Employee',
+      };
       jest.spyOn(service, 'update').mockResolvedValue(updatedEmployee);
 
       const result = await controller.update(mockEmployee1.id, updateDto);

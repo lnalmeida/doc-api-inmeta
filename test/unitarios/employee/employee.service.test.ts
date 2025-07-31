@@ -2,7 +2,10 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmployeeService } from '../../../src/modules/employees/employee.service';
-import { IEmployeeRepository, EMPLOYEE_REPOSITORY } from '../../../src/modules/employees/interfaces/employee.repository.interface'; // Ajuste o caminho
+import {
+  IEmployeeRepository,
+  EMPLOYEE_REPOSITORY,
+} from '../../../src/modules/employees/interfaces/employee.repository.interface'; // Ajuste o caminho
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Employee } from '@prisma/client';
 import { PaginationResult } from '../../../src/common/types/pagination.types'; // Ajuste o caminho
@@ -64,15 +67,25 @@ describe('EmployeesService', () => {
       const result = await service.create(createDto);
 
       expect(result).toEqual(createdEmployee);
-      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(createDto.cpf);
-      expect(mockEmployeeRepository.createEmployee).toHaveBeenCalledWith(createDto);
+      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(
+        createDto.cpf,
+      );
+      expect(mockEmployeeRepository.createEmployee).toHaveBeenCalledWith(
+        createDto,
+      );
     });
 
     it('deve lançar ConflictException se o CPF do colaborador já existir', async () => {
-      mockEmployeeRepository.findEmployeeByCpf.mockResolvedValue(createdEmployee); // CPF já existe
+      mockEmployeeRepository.findEmployeeByCpf.mockResolvedValue(
+        createdEmployee,
+      ); // CPF já existe
 
-      await expect(service.create(createDto)).rejects.toThrow(ConflictException);
-      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(createDto.cpf);
+      await expect(service.create(createDto)).rejects.toThrow(
+        ConflictException,
+      );
+      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(
+        createDto.cpf,
+      );
       expect(mockEmployeeRepository.createEmployee).not.toHaveBeenCalled();
     });
   });
@@ -80,8 +93,22 @@ describe('EmployeesService', () => {
   describe('buscarTodos', () => {
     const filters = { page: 1, limit: 10, name: 'Silva' };
     const mockEmployees: Employee[] = [
-      { id: '1', name: 'Maria Silva', cpf: '111.111.111-11', hiredAt: new Date(), createdAt: new Date(), updatedAt: new Date() },
-      { id: '2', name: 'Pedro Silva', cpf: '222.222.222-22', hiredAt: new Date(), createdAt: new Date(), updatedAt: new Date() },
+      {
+        id: '1',
+        name: 'Maria Silva',
+        cpf: '111.111.111-11',
+        hiredAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '2',
+        name: 'Pedro Silva',
+        cpf: '222.222.222-22',
+        hiredAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ];
     const paginationResult: PaginationResult<Employee> = {
       data: mockEmployees,
@@ -92,12 +119,16 @@ describe('EmployeesService', () => {
     };
 
     it('deve retornar uma lista paginada de colaboradores', async () => {
-      mockEmployeeRepository.findAllEmployees.mockResolvedValue(paginationResult);
+      mockEmployeeRepository.findAllEmployees.mockResolvedValue(
+        paginationResult,
+      );
 
       const result = await service.findAll(filters);
 
       expect(result).toEqual(paginationResult);
-      expect(mockEmployeeRepository.findAllEmployees).toHaveBeenCalledWith(filters);
+      expect(mockEmployeeRepository.findAllEmployees).toHaveBeenCalledWith(
+        filters,
+      );
     });
 
     it('deve retornar uma lista vazia se nenhum colaborador for encontrado', async () => {
@@ -110,12 +141,16 @@ describe('EmployeesService', () => {
         totalPages: 0,
       };
 
-      mockEmployeeRepository.findAllEmployees.mockResolvedValue(emptyPaginationResult);
+      mockEmployeeRepository.findAllEmployees.mockResolvedValue(
+        emptyPaginationResult,
+      );
 
       const result = await service.findAll(emptyFilters);
 
       expect(result).toEqual(emptyPaginationResult);
-      expect(mockEmployeeRepository.findAllEmployees).toHaveBeenCalledWith(emptyFilters);
+      expect(mockEmployeeRepository.findAllEmployees).toHaveBeenCalledWith(
+        emptyFilters,
+      );
     });
   });
 
@@ -136,14 +171,20 @@ describe('EmployeesService', () => {
       const result = await service.findOne(employeeId);
 
       expect(result).toEqual(foundEmployee);
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
     });
 
     it('deve lançar NotFoundException se o colaborador não for encontrado pelo ID', async () => {
       mockEmployeeRepository.findEmployeeById.mockResolvedValue(null);
 
-      await expect(service.findOne(employeeId)).rejects.toThrow(NotFoundException);
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
+      await expect(service.findOne(employeeId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
     });
   });
 
@@ -160,35 +201,57 @@ describe('EmployeesService', () => {
 
     it('deve atualizar um colaborador com sucesso', async () => {
       const updateDto = { name: 'Colaborador Novo' };
-      const updatedEmployee: Employee = { ...existingEmployee, name: updateDto.name };
+      const updatedEmployee: Employee = {
+        ...existingEmployee,
+        name: updateDto.name,
+      };
 
-      mockEmployeeRepository.findEmployeeById.mockResolvedValue(existingEmployee);
+      mockEmployeeRepository.findEmployeeById.mockResolvedValue(
+        existingEmployee,
+      );
       mockEmployeeRepository.findEmployeeByCpf.mockResolvedValue(null); // Nenhum outro CPF igual
       mockEmployeeRepository.updateEmployee.mockResolvedValue(updatedEmployee);
 
       const result = await service.update(employeeId, updateDto);
 
       expect(result).toEqual(updatedEmployee);
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
       expect(mockEmployeeRepository.findEmployeeByCpf).not.toHaveBeenCalled(); // CPF não foi alterado
-      expect(mockEmployeeRepository.updateEmployee).toHaveBeenCalledWith(employeeId, updateDto);
+      expect(mockEmployeeRepository.updateEmployee).toHaveBeenCalledWith(
+        employeeId,
+        updateDto,
+      );
     });
 
     it('deve atualizar um colaborador com sucesso e verificar novo CPF', async () => {
       const updateDto = { cpf: '555.555.555-55' };
-      const updatedEmployee: Employee = { ...existingEmployee, cpf: updateDto.cpf };
+      const updatedEmployee: Employee = {
+        ...existingEmployee,
+        cpf: updateDto.cpf,
+      };
       const existingEmployeeWithOldCpf: Employee = { ...existingEmployee }; // Mocks findEmployeeById
 
-      mockEmployeeRepository.findEmployeeById.mockResolvedValue(existingEmployeeWithOldCpf);
+      mockEmployeeRepository.findEmployeeById.mockResolvedValue(
+        existingEmployeeWithOldCpf,
+      );
       mockEmployeeRepository.findEmployeeByCpf.mockResolvedValue(null); // Novo CPF não existe
       mockEmployeeRepository.updateEmployee.mockResolvedValue(updatedEmployee);
 
       const result = await service.update(employeeId, updateDto);
 
       expect(result).toEqual(updatedEmployee);
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
-      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(updateDto.cpf);
-      expect(mockEmployeeRepository.updateEmployee).toHaveBeenCalledWith(employeeId, updateDto);
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
+      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(
+        updateDto.cpf,
+      );
+      expect(mockEmployeeRepository.updateEmployee).toHaveBeenCalledWith(
+        employeeId,
+        updateDto,
+      );
     });
 
     it('deve lançar NotFoundException se o colaborador a ser atualizado não for encontrado', async () => {
@@ -196,8 +259,12 @@ describe('EmployeesService', () => {
 
       mockEmployeeRepository.findEmployeeById.mockResolvedValue(null);
 
-      await expect(service.update(employeeId, updateDto)).rejects.toThrow(NotFoundException);
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
+      await expect(service.update(employeeId, updateDto)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
       expect(mockEmployeeRepository.updateEmployee).not.toHaveBeenCalled();
     });
 
@@ -212,12 +279,22 @@ describe('EmployeesService', () => {
         updatedAt: new Date(),
       };
 
-      mockEmployeeRepository.findEmployeeById.mockResolvedValue(existingEmployee);
-      mockEmployeeRepository.findEmployeeByCpf.mockResolvedValue(employeeWithConflictingCpf); // Conflito de CPF
+      mockEmployeeRepository.findEmployeeById.mockResolvedValue(
+        existingEmployee,
+      );
+      mockEmployeeRepository.findEmployeeByCpf.mockResolvedValue(
+        employeeWithConflictingCpf,
+      ); // Conflito de CPF
 
-      await expect(service.update(employeeId, updateDto)).rejects.toThrow(ConflictException);
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
-      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(updateDto.cpf);
+      await expect(service.update(employeeId, updateDto)).rejects.toThrow(
+        ConflictException,
+      );
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
+      expect(mockEmployeeRepository.findEmployeeByCpf).toHaveBeenCalledWith(
+        updateDto.cpf,
+      );
       expect(mockEmployeeRepository.updateEmployee).not.toHaveBeenCalled();
     });
   });
@@ -234,20 +311,30 @@ describe('EmployeesService', () => {
     };
 
     it('deve deletar um colaborador com sucesso', async () => {
-      mockEmployeeRepository.findEmployeeById.mockResolvedValue(existingEmployee);
+      mockEmployeeRepository.findEmployeeById.mockResolvedValue(
+        existingEmployee,
+      );
       mockEmployeeRepository.deleteEmployee.mockResolvedValue(undefined);
 
       await service.remove(employeeId);
 
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
-      expect(mockEmployeeRepository.deleteEmployee).toHaveBeenCalledWith(employeeId);
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
+      expect(mockEmployeeRepository.deleteEmployee).toHaveBeenCalledWith(
+        employeeId,
+      );
     });
 
     it('deve lançar NotFoundException se o colaborador a ser deletado não for encontrado', async () => {
       mockEmployeeRepository.findEmployeeById.mockResolvedValue(null);
 
-      await expect(service.remove(employeeId)).rejects.toThrow(NotFoundException);
-      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(employeeId);
+      await expect(service.remove(employeeId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(mockEmployeeRepository.findEmployeeById).toHaveBeenCalledWith(
+        employeeId,
+      );
       expect(mockEmployeeRepository.deleteEmployee).not.toHaveBeenCalled();
     });
   });
